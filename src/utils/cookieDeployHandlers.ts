@@ -13,3 +13,12 @@ export const deployAuthCookie = ({ authCookie }: { authCookie: string }, res: Re
 
   // log.info(`AuthCookie: '${authCookie}' \n \n Auth cookie deployed successfully`);
 };
+
+export const clearAuthCookie = (res: Response) => {
+  res.cookie(`MultiDB_NodeExpressTypescript_Template__Auth_Cookie`, '', {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'strict',
+    maxAge: 0
+  });
+};
