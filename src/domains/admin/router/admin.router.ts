@@ -3,6 +3,7 @@ import { Router } from 'express';
 // import { registerUser } from '../controllers/auth.registerUser.controller.js';
 import { validateData } from '../../../middlewares/validateData.middleware.js';
 import { deactivateUser } from '../controllers/admin.deactivateUser.controller.js';
+import { activateUser } from '../controllers/admin.activateUser.controller.js';
 import { ObjectId } from 'mongodb';
 import * as z from 'zod';
 // import { userSchema } from '../../user/schema/user.schema.js';
@@ -82,3 +83,12 @@ router.patch(
 );
 
 export default router;
+
+// routes
+router.patch(
+  '/activate-user/:userId',
+  validateData({ params: combinedParamsSchema, body: userSchema }),
+  sessionsMiddleware,
+  accessMiddleware,
+  activateUser
+);

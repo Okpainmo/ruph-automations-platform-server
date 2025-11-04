@@ -4,6 +4,8 @@ import { validateData } from '../../../middlewares/validateData.middleware.js';
 // import { userSchema } from '../../user/schema/user.schema.js';
 import { authSchema__register, authSchema__logIn } from '../schema/auth.schema.js';
 import { LogIn } from '../controllers/auth.logIn.controller.js';
+import sessionsMiddleware from '../../../middlewares/auth.sessions.middleware.js';
+import { LogOut } from '../controllers/auth.logOut.controller.js';
 
 const router = Router();
 
@@ -16,5 +18,6 @@ Only the data validation is necessary.
 */
 router.post('/register', validateData({ body: authSchema__register }), registerUser);
 router.post('/log-in', validateData({ body: authSchema__logIn }), LogIn);
+router.post('/log-out', sessionsMiddleware, LogOut);
 
 export default router;

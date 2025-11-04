@@ -1,19 +1,16 @@
 // sample controller
 /**
- * @description Deactivate a user by ID (admin only)
+ * @description Activate a user by ID (admin only)
  * @request PATCH
- * @route /api/v1/admin/deactivate-user/:userId
+ * @route /api/v1/admin/activate-user/:userId
  * @access Admin
  */
 
 import type { Request, Response } from 'express';
-// import { updateUser__mongo } from '../../user/lib/mongo__user.updateUser.service.js';
 import { updateUser__postgres } from '../../user/lib/postgres__user.updateUser.service.js';
-// import { findUser__mongo } from '../../user/lib/mongo__user.findUser.service.js';
 import { findUser__postgres } from '../../user/lib/postgres__user.findUser.service.js';
 import { errorHandler__404, errorHandler__500, errorHandler__403, errorHandler__400 } from '../../../utils/errorHandlers/codedErrorHandlers.js';
 import type { UserSpecs } from '../../user/schema/user.schema.js';
-// import log from '../../../utils/logger.js';
 
 type UserProfileResponse = Pick<
   UserSpecs,
@@ -30,7 +27,7 @@ type ResponseSpecs = {
   };
 };
 
-export const deactivateUser = async (req: Request<{ userId?: string | number }, ResponseSpecs>, res: Response<ResponseSpecs>) => {
+export const activateUser = async (req: Request<{ userId?: string | number }, ResponseSpecs>, res: Response<ResponseSpecs>) => {
   try {
     const { userId } = req.params;
 
@@ -43,34 +40,32 @@ export const deactivateUser = async (req: Request<{ userId?: string | number }, 
       return;
     }
 
-    // const userToDeactivate = await findUser__mongo({userId: userId as string });
-    const userToDeactivate = await findUser__postgres({ userId: Number(userId) });
+    const userToActivate = await findUser__postgres({ userId: Number(userId) });
 
-    if (!userToDeactivate) {
+    if (!userToActivate) {
       errorHandler__404(`User with id: '${userId}' not found or does not exist`, res);
 
       return;
     }
 
-    if (userToDeactivate.isActive == false) {
-      return errorHandler__400(`user with id: '${userId}' has already been de-activated`, res);
+    if (userToActivate.isActive == true) {
+      return errorHandler__400(`user with id: '${userId}' is already active`, res);
     }
 
-    const deactivatedUser = await updateUser__postgres({ userId: Number(userId), requestBody: { isActive: false } });
-    //   const deactivatedUser = await updateUser__mongo({ userId: userId, requestBody: { isActive: false } });
+    const activatedUser = await updateUser__postgres({ userId: Number(userId), requestBody: { isActive: true } });
 
-    if (deactivatedUser && req?.userData?.newUserAccessToken && req?.userData?.newUserRefreshToken) {
+    if (activatedUser && req?.userData?.newUserAccessToken && req?.userData?.newUserRefreshToken) {
       res.status(200).json({
-        responseMessage: 'User deactivated successfully.',
+        responseMessage: 'User activated successfully.',
         response: {
           userProfile: {
-            id: deactivatedUser.id,
-            name: deactivatedUser.name || '',
-            email: deactivatedUser.email,
-            isAdmin: deactivatedUser.isAdmin,
-            isActive: deactivatedUser.isActive,
-            createdAt: deactivatedUser.createdAt,
-            updatedAt: deactivatedUser.updatedAt
+            id: activatedUser.id,
+            name: activatedUser.name || '',
+            email: activatedUser.email,
+            isAdmin: activatedUser.isAdmin,
+            isActive: activatedUser.isActive,
+            createdAt: activatedUser.createdAt,
+            updatedAt: activatedUser.updatedAt
           },
           accessToken: req?.userData?.newUserAccessToken,
           refreshToken: req?.userData?.newUserRefreshToken

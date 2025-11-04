@@ -8,13 +8,14 @@ import log from './utils/logger.js';
 import { URL } from 'url';
 
 // DB imports
-import connectMongoDb from './db/connect-mongodb.js';
+// import connectMongoDb from './db/connect-mongodb.js';
 import connectPostgres from './db/connect-postgres.js';
 
 // routes imports
 import userRouter from './domains/user/router/user.router.js';
 import authRouter from './domains/auth/router/auth.router.js';
 import adminRouter from './domains/admin/router/admin.router.js';
+import systemRouter from './domains/system/router/system.router.js';
 
 // middleware imports
 import { requestDurationLogging } from './middlewares/requestDurationLogging.middleware.js';
@@ -24,7 +25,9 @@ const app = express();
 dotenv.config();
 
 const allowedOrigins =
-  process.env.NODE_ENV === 'production' ? ['https://mydomain.com'] : ['http://localhost:3000', 'http://localhost:5173', 'http://127.0.0.1:5173'];
+  process.env.NODE_ENV === 'production'
+    ? ['https://mydomain.com']
+    : ['http://localhost:3000', 'http://localhost:5173', 'http://localhost:8081', 'http://10.0.2.2:8081'];
 
 app.use(
   cors({
@@ -40,7 +43,7 @@ app.use(
       return callback(null, true);
     },
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'email']
+    allowedHeaders: ['Content-Type', 'Authorization', 'email', 'client']
   })
 );
 
@@ -77,22 +80,23 @@ app.get('/', (_req: Request, res: Response) => {
 app.use(`/api/v1/user`, userRouter);
 app.use(`/api/v1/auth`, authRouter);
 app.use(`/api/v1/admin`, adminRouter);
+app.use(`/api/v1/system`, systemRouter);
 
 const port = process.env.PORT || 5000;
 
 const start = async () => {
-  const mongoDb_URI = process.env.MONGO_DB_URI;
+  // const mongoDb_URI = process.env.MONGO_DB_URI;
 
   try {
-    log.info(`Establishing database connection...`);
-    const mongoDbConnection = await connectMongoDb(mongoDb_URI);
+    // log.info(`Establishing database connection...`);
+    // const mongoDbConnection = await connectMongoDb(mongoDb_URI);
 
-    if (mongoDbConnection) {
-      log.info(
-        `...................................\nConnected to: ${mongoDbConnection?.connection.host}\nEnvironment: ${process.env.DEPLOY_ENV ? process.env.DEPLOY_ENV : 'development'}
-      \nMongoDB connected successfully \n........................................................`
-      );
-    }
+    // if (mongoDbConnection) {
+    //   log.info(
+    //     `...................................\nConnected to: ${mongoDbConnection?.connection.host}\nEnvironment: ${process.env.DEPLOY_ENV ? process.env.DEPLOY_ENV : 'development'}
+    //   \nMongoDB connected successfully \n........................................................`
+    //   );
+    // }
 
     await connectPostgres();
     const parsedUrl = new URL(process.env.POSTGRES_DATABASE_URL as string);
