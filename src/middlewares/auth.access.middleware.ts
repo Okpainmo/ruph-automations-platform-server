@@ -11,6 +11,7 @@ import log from '../utils/logger.js';
 type RequestHeaderContentSpecs = {
   authorization: string;
   email: string;
+  client: string;
 };
 
 type ResponseSpecs = {
@@ -46,11 +47,11 @@ const accessMiddleware = async (req: Request, res: Response<ResponseSpecs>, next
   // receive userData from previous middleware
   const user = req?.userData?.user;
 
-  const { authorization } = requestHeaders as RequestHeaderContentSpecs;
+  const { authorization, client } = requestHeaders as RequestHeaderContentSpecs;
   const jwtSecret = process.env.JWT_SECRET as string;
 
   // checking for the cookie again - just to be extra-secure
-  if (!req.headers.cookie || !req.headers.cookie.includes('MultiDB_NodeExpressTypescript_Template')) {
+  if (client !== 'mobile' && (!req.headers.cookie || !req.headers.cookie.includes('MultiDB_NodeExpressTypescript_Template'))) {
     errorHandler__401('request rejected, please re-authenticate', res);
 
     return;

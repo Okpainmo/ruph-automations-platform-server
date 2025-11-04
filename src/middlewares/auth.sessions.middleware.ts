@@ -9,7 +9,7 @@ import log from '../utils/logger.js';
 type RequestHeaderContentSpecs = {
   authorization: string;
   email: string;
-  sub_session_activity_id: string;
+  client: string;
 };
 
 type ResponseSpecs = {
@@ -31,7 +31,7 @@ type JwtPayloadSpecs = {
 const sessionsMiddleware = async (req: Request, res: Response<ResponseSpecs>, next: NextFunction) => {
   const requestHeaders = req.headers;
 
-  const { email, authorization } = requestHeaders as RequestHeaderContentSpecs;
+  const { email, authorization, client } = requestHeaders as RequestHeaderContentSpecs;
   const jwtSecret = process.env.JWT_SECRET as string;
 
   if (!email || !authorization) {
@@ -55,7 +55,7 @@ const sessionsMiddleware = async (req: Request, res: Response<ResponseSpecs>, ne
   (see `src => utils => generateTokens.ts`). As such, you should be able to extract that data, and perform extra 
   queries on the cookie - going further to validate it's authenticity - if you wish. I highly recommend doing that.
   */
-  if (!req.headers.cookie || !req.headers.cookie.includes('MultiDB_NodeExpressTypescript_Template')) {
+  if (client !== 'mobile' && (!req.headers.cookie || !req.headers.cookie.includes('MultiDB_NodeExpressTypescript_Template'))) {
     errorHandler__401('request rejected, please re-authenticate', res);
 
     return;
