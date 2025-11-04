@@ -26,3 +26,17 @@ model User {
   accessToken   String? @default("temp-token")
   refreshToken  String? @default("temp-refresh-token")
 }
+
+model System {
+  id                Int      @id @default(autoincrement())
+  controllerId      String?
+  ownerEmail        String?   @default("Unactivated")   // ✅ default
+  circuitEndPoint_1 String?
+  circuitEndPoint_2 String?
+  circuitEndPoint_3 String?
+  circuitEndPoint_4 String?
+  controllerName    String?   @default("Unactivated")   // ✅ default
+  isActivated       Boolean?  @default(false)
+  createdAt         DateTime? @default(now())
+  updatedAt         DateTime? @updatedAt
+}
