@@ -19,7 +19,7 @@ import { requestDurationLogging } from './middlewares/requestDurationLogging.mid
 const app = express();
 dotenv.config();
 const allowedOrigins = process.env.NODE_ENV === 'production'
-    ? ['https://ruphautomations.zedlabs.xyz']
+    ? ['https://ruphautomations.xyz']
     : ['http://localhost:3000', 'http://localhost:5173', 'http://localhost:8081', 'http://10.0.2.2:8081'];
 app.use(cors({
     credentials: true,
