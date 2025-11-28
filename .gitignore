@@ -16,7 +16,10 @@
 /prisma/migrations
 
 # notes
-notes.md
+notes.dev.md
 
 # extras
 .vscode
+branch_structure.json
+temp_auto_push.bat
+temp_interactive_push.bat
